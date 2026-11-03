@@ -1,6 +1,6 @@
-
 "use client";
 
+import RoleSwitcher from "@/components/layout/RoleSwitcher";
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Bell, Menu, Search, X, ArrowRight } from "lucide-react";
@@ -119,7 +119,7 @@ export default function DashboardLayout({
               </div>
             </div>
           </div>
-        </header>
+        <RoleSwitcher /></header>
 
         <main className="mx-auto w-full max-w-[1600px] p-5 sm:p-8">
           {children}
