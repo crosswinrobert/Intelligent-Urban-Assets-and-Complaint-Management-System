@@ -1,0 +1,202 @@
+
+@import "tailwindcss";
+
+/* =========================================
+   URBAN PULSE — DARK DESIGN SYSTEM
+   ========================================= */
+
+:root {
+  color-scheme: dark;
+
+  --background: #101614;
+  --foreground: #f1f5f3;
+
+  --surface: #19221e;
+  --surface-hover: #202c25;
+  --surface-elevated: #222e27;
+
+  --border: #29352f;
+  --border-strong: #37463d;
+
+  --primary: #22c55e;
+  --primary-hover: #16a34a;
+  --primary-muted: rgba(34, 197, 94, 0.12);
+
+  --text-primary: #f1f5f3;
+  --text-secondary: #a3b1a9;
+  --text-muted: #78877f;
+
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --info: #38bdf8;
+
+  --sidebar-width: 260px;
+  --header-height: 72px;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background: var(--background);
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background: var(--background);
+  color: var(--text-primary);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Scrollbars */
+
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 10px;
+}
+
+/* Selection */
+
+::selection {
+  background: rgba(34, 197, 94, 0.25);
+  color: var(--foreground);
+}
+
+/* Reusable surfaces */
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.panel-hover {
+  transition: border-color 180ms ease, background 180ms ease;
+}
+
+.panel-hover:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+}
+
+/* Reusable buttons */
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: var(--primary);
+  color: #07140b;
+  font-weight: 600;
+  transition: background 180ms ease;
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-primary);
+  font-weight: 500;
+  transition: background 180ms ease;
+}
+
+.btn-secondary:hover {
+  background: var(--surface-hover);
+}
+
+/* Form controls */
+
+.form-control {
+  width: 100%;
+  padding: 11px 13px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  outline: none;
+  background: var(--background);
+  color: var(--text-primary);
+  transition: border-color 180ms ease;
+}
+
+.form-control:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-muted);
+}
+
+.form-control::placeholder {
+  color: var(--text-muted);
+}
+
+/* Status indicators */
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--success);
+}
+
+/* Responsive layout */
+
+@media (max-width: 768px) {
+  :root {
+    --header-height: 64px;
+  }
+}
