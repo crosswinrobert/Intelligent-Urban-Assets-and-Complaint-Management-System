@@ -1,28 +1,4 @@
-import Link from "next/link";
+"use client";
+import {useEffect,useState} from "react";
 import CitizenLayout from "@/components/layout/CitizenLayout";
-import { FileText, Clock, CheckCircle2, PlusCircle } from "lucide-react";
-
-const stats = [
-  { label: "Total Complaints", value: "05", icon: FileText, color: "text-sky-400" },
-  { label: "Under Review", value: "02", icon: Clock, color: "text-amber-400" },
-  { label: "Resolved", value: "03", icon: CheckCircle2, color: "text-emerald-400" },
-];
-
-export default function CitizenDashboard() {
-  return <CitizenLayout title="Dashboard">
-    <div className="mb-7 flex flex-wrap items-center justify-between gap-4">
-      <div><h1 className="text-2xl font-bold">Welcome back!</h1><p className="mt-1 text-sm text-[#A3B1A9]">Report issues and track the progress of your complaints.</p></div>
-      <Link href="/citizen/submit" className="flex items-center gap-2 rounded-lg bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-black"><PlusCircle size={17}/> Submit Complaint</Link>
-    </div>
-    <div className="grid gap-4 sm:grid-cols-3">
-      {stats.map(s=>{const Icon=s.icon;return <div key={s.label} className="rounded-xl border border-[#29352F] bg-[#19221E] p-5"><div className="flex justify-between"><p className="text-sm text-[#A3B1A9]">{s.label}</p><Icon className={s.color}/></div><p className="mt-4 text-3xl font-bold">{s.value}</p></div>;})}
-    </div>
-    <section className="mt-8 rounded-xl border border-[#29352F] bg-[#19221E] p-5">
-      <div className="mb-5 flex items-center justify-between"><h2 className="font-semibold">Recent Complaints</h2><Link href="/citizen/complaints" className="text-sm text-emerald-400">View all</Link></div>
-      <div className="space-y-4">
-        {[["CMP-1024","Streetlight not working","Jayanagar","In Progress"],["CMP-1028","Garbage not collected","BTM Layout","Pending"],["CMP-0982","Water leakage","Banashankari","Resolved"]].map(c=><div key={c[0]} className="flex flex-wrap items-center justify-between gap-3 border-b border-[#29352F] pb-4 last:border-0"><div><p className="font-medium">{c[1]}</p><p className="mt-1 text-xs text-[#78877F]">{c[0]} ? {c[2]}</p></div><span className="rounded-full bg-[#29352F] px-3 py-1 text-xs">{c[3]}</span></div>)}
-      </div>
-    </section>
-    <div className="mt-6 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-5"><h2 className="font-semibold text-emerald-400">Help improve your neighbourhood</h2><p className="mt-2 text-sm text-[#A3B1A9]">Report damaged roads, waste accumulation, broken streetlights and other civic issues.</p></div>
-  </CitizenLayout>;
-}
+export default function CitizenDashboard(){const [citizens,setCitizens]=useState<any[]>([]),[userId,setUserId]=useState(""),[rows,setRows]=useState<any[]>([]),[error,setError]=useState("");useEffect(()=>{fetch("/api/citizens").then(r=>r.json()).then(j=>{if(j.success)setCitizens(j.citizens||[]);else setError(j.error||"Unable to load citizen records");}).catch(()=>setError("Unable to load citizen records"));},[]);async function load(){if(!userId)return;try{const r=await fetch(`/api/complaints?userId=${userId}`);const j=await r.json();if(!j.success)throw Error(j.error||"Unable to load complaints");setRows(j.complaints||[]);}catch(e){setError(e instanceof Error?e.message:"Load failed");}}const resolved=rows.filter(x=>x.ResolvedAt).length;return <CitizenLayout title="Citizen Dashboard"><div className="mb-7"><h1 className="text-2xl font-bold">Citizen Dashboard</h1><p className="mt-1 text-sm text-[#A3B1A9]">Track complaints for your citizen account.</p></div><div className="mb-5 flex flex-wrap gap-3"><select className="form-control min-w-[260px]" value={userId} onChange={e=>{setUserId(e.target.value);setRows([]);}}><option value="">Select citizen account</option>{citizens.map(c=><option key={c.user_id} value={c.user_id}>{c.Fname} {c.Lname} · {c.Email}</option>)}</select><button className="btn-primary" disabled={!userId} onClick={load}>Load dashboard</button></div>{error&&<p className="mb-4 text-sm text-red-400">{error}</p>}<div className="mb-5 grid gap-3 sm:grid-cols-3">{[["Total Complaints",rows.length],["In Progress",rows.filter(x=>x.current_status==="In Progress").length],["Resolved",resolved]].map(x=><div key={x[0]} className="rounded-xl border border-[#29352F] bg-[#19221E] p-5"><p className="text-sm text-[#A3B1A9]">{x[0]}</p><p className="mt-2 text-3xl font-bold">{x[1]}</p></div>)}</div><div className="rounded-xl border border-[#29352F] bg-[#19221E] p-5"><h2 className="mb-4 font-semibold">Recent complaints</h2>{rows.slice(0,5).map(x=><div key={x.complaint_id} className="border-b border-[#29352F] py-3"><p className="font-medium">#{x.complaint_id} · {x.Category}</p><p className="mt-1 text-sm text-[#A3B1A9]">{x.RawDescription}</p><p className="mt-1 text-xs text-[#78877F]">{x.current_status}</p></div>)}</div></CitizenLayout>}

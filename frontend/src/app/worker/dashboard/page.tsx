@@ -1,28 +1,4 @@
+"use client";
+import {useEffect,useState} from "react";
 import WorkerLayout from "@/components/layout/WorkerLayout";
-import { ClipboardList, Clock, CheckCircle2, AlertCircle } from "lucide-react";
-
-const stats = [
-  { label: "Total Assignments", value: "12", icon: ClipboardList, color: "text-sky-400" },
-  { label: "Pending Tasks", value: "04", icon: Clock, color: "text-amber-400" },
-  { label: "Completed", value: "08", icon: CheckCircle2, color: "text-emerald-400" },
-  { label: "High Priority", value: "02", icon: AlertCircle, color: "text-red-400" },
-];
-
-const tasks = [
-  { id: "CMP-1024", title: "Streetlight malfunction", location: "Jayanagar, Bengaluru", priority: "High", status: "In Progress" },
-  { id: "CMP-1028", title: "Garbage accumulation", location: "BTM Layout, Bengaluru", priority: "Medium", status: "Pending" },
-  { id: "CMP-1031", title: "Damaged road surface", location: "JP Nagar, Bengaluru", priority: "High", status: "Pending" },
-];
-
-export default function WorkerDashboard() {
-  return <WorkerLayout title="Dashboard">
-    <div className="mb-7"><h1 className="text-2xl font-bold">Good day, Worker!</h1><p className="mt-1 text-sm text-[#A3B1A9]">Here's an overview of your field activities.</p></div>
-    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-      {stats.map(s => { const Icon = s.icon; return <div key={s.label} className="rounded-xl border border-[#29352F] bg-[#19221E] p-5"><div className="flex justify-between"><p className="text-sm text-[#A3B1A9]">{s.label}</p><Icon className={s.color}/></div><p className="mt-4 text-3xl font-bold">{s.value}</p></div>; })}
-    </div>
-    <section className="mt-8 rounded-xl border border-[#29352F] bg-[#19221E] p-5">
-      <h2 className="mb-5 text-lg font-semibold">Recent Assignments</h2>
-      <div className="overflow-x-auto"><table className="w-full min-w-[650px] text-left text-sm"><thead className="text-[#78877F]"><tr><th className="pb-3">Complaint</th><th>Location</th><th>Priority</th><th>Status</th></tr></thead><tbody>{tasks.map(t => <tr key={t.id} className="border-t border-[#29352F]"><td className="py-4"><p className="font-medium">{t.title}</p><p className="text-xs text-[#78877F]">{t.id}</p></td><td className="text-[#A3B1A9]">{t.location}</td><td><span className={t.priority === "High" ? "text-red-400" : "text-amber-400"}>{t.priority}</span></td><td><span className="rounded-full bg-[#29352F] px-3 py-1 text-xs">{t.status}</span></td></tr>)}</tbody></table></div>
-    </section>
-  </WorkerLayout>;
-}
+export default function WorkerDashboard(){const [workers,setWorkers]=useState<any[]>([]),[staffId,setStaffId]=useState(""),[rows,setRows]=useState<any[]>([]),[error,setError]=useState("");useEffect(()=>{fetch("/api/workers").then(r=>r.json()).then(j=>{if(j.success)setWorkers(j.workers||[]);else setError(j.error||"Unable to load staff");}).catch(()=>setError("Unable to load staff"));},[]);async function load(id=staffId){if(!id)return;try{const r=await fetch(`/api/assignments?staffId=${id}`);const j=await r.json();if(!j.success)throw Error(j.error||"Unable to load assignments");setRows(j.data||[]);}catch(e){setError(e instanceof Error?e.message:"Load failed");}}const done=rows.filter(x=>x.CompletedAt||x.current_status==="Resolved").length;return <WorkerLayout title="Worker Dashboard"><div className="mb-7"><h1 className="text-2xl font-bold">Worker Dashboard</h1><p className="mt-1 text-sm text-[#A3B1A9]">Operational overview for a staff record.</p></div><div className="mb-5 flex flex-wrap gap-3"><select className="form-control min-w-[260px]" value={staffId} onChange={e=>{setStaffId(e.target.value);setRows([]);}}><option value="">Select your staff record</option>{workers.map(w=><option key={w.staff_id} value={w.staff_id}>#{w.staff_id} · {w.Fname} {w.Lname}</option>)}</select><button className="btn-primary" disabled={!staffId} onClick={()=>load()}>Load dashboard</button></div>{error&&<p className="mb-4 text-sm text-red-400">{error}</p>}<div className="mb-5 grid gap-3 sm:grid-cols-3">{[["Assignments",rows.length],["Open",rows.length-done],["Completed",done]].map(x=><div key={x[0]} className="rounded-xl border border-[#29352F] bg-[#19221E] p-5"><p className="text-sm text-[#A3B1A9]">{x[0]}</p><p className="mt-2 text-3xl font-bold">{x[1]}</p></div>)}</div><div className="rounded-xl border border-[#29352F] bg-[#19221E] p-5"><h2 className="mb-4 font-semibold">Assigned work</h2>{rows.slice(0,6).map(x=><div key={x.assignment_id} className="border-b border-[#29352F] py-3"><p className="font-medium">#{x.complaint_id} · {x.Category}</p><p className="mt-1 text-sm text-[#A3B1A9]">{x.RawDescription}</p><p className="mt-1 text-xs text-[#78877F]">{x.CompletedAt?"Completed":x.current_status}</p></div>)}{staffId&&!rows.length&&<p className="text-sm text-[#A3B1A9]">No assignments for this staff record.</p>}</div></WorkerLayout>}

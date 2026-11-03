@@ -1,19 +1,4 @@
 "use client";
+import {useEffect,useState} from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-
-const stats=[
- ["Total Complaints","29"],
- ["Total Workers","15"],
- ["Total Assets","16"],
- ["Total Departments","8"],
- ["Resolutions","10"],
- ["Audit Entries","1"],
-];
-
-export default function AnalyticsPage(){
- return <DashboardLayout title="Analytics"><div className="space-y-6">
-  <div><h1 className="text-2xl font-semibold">Analytics</h1><p className="mt-1 text-sm text-[var(--text-secondary)]">Database summary and operational metrics.</p></div>
-  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{stats.map(([label,value])=><div className="panel p-5" key={label}><p className="text-sm text-[var(--text-secondary)]">{label}</p><p className="mt-2 text-3xl font-semibold">{value}</p></div>)}</div>
-  <div className="panel p-5"><h2 className="font-medium">Database reporting</h2><p className="mt-2 text-sm text-[var(--text-secondary)]">These initial counts reflect the supplied sample dataset. We will replace them with SQL aggregate queries and grouped reports through the API.</p></div>
- </div></DashboardLayout>;
-}
+export default function AnalyticsPage(){const [data,setData]=useState<any>(null),[error,setError]=useState("");useEffect(()=>{fetch("/api/dashboard").then(async r=>{const j=await r.json();if(!r.ok||!j.success)throw Error(j.error||"Analytics unavailable");setData(j);}).catch(e=>setError(e.message));},[]);const c=data?.counts||{};const stats=[["Total Complaints",c.total_complaints??"—"],["Open Complaints",c.open_complaints??"—"],["Resolved Complaints",c.resolved_complaints??"—"],["Total Workers",c.total_workers??"—"],["Total Assets",c.total_assets??"—"],["Departments",c.total_departments??"—"]];return <DashboardLayout title="Analytics"><div className="space-y-6"><div><h1 className="text-2xl font-semibold">Analytics</h1><p className="mt-1 text-sm text-[var(--text-secondary)]">Live operational metrics calculated from MySQL.</p></div>{error&&<p className="text-sm text-red-400">{error}</p>}<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{stats.map(([label,value])=><div className="panel p-5" key={label}><p className="text-sm text-[var(--text-secondary)]">{label}</p><p className="mt-2 text-3xl font-semibold">{value}</p></div>)}</div><div className="panel p-5"><h2 className="mb-4 font-medium">Complaints by status</h2><div className="space-y-3">{(data?.statuses||[]).map((x:any)=><div key={x.status} className="flex items-center justify-between border-b border-[var(--border)] pb-3 text-sm"><span>{x.status}</span><strong>{x.count}</strong></div>)}</div></div><div className="panel p-5"><h2 className="mb-4 font-medium">Department workload</h2><div className="overflow-x-auto"><table className="w-full text-left text-sm"><thead><tr>{["Department","Staff","Assigned","In Progress","Resolved"].map(x=><th key={x} className="p-3">{x}</th>)}</tr></thead><tbody>{(data?.departments||[]).map((x:any)=><tr key={x.dept_id} className="border-t border-[var(--border)]"><td className="p-3">{x.dept_name}</td><td className="p-3">{x.total_staff}</td><td className="p-3">{x.total_assigned_complaints}</td><td className="p-3">{x.pending_complaints}</td><td className="p-3">{x.resolved_complaints}</td></tr>)}</tbody></table></div></div></div></DashboardLayout>}

@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+﻿const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
 type ApiOptions = RequestInit & {
   params?: Record<string, string | number | boolean | undefined>;
@@ -39,3 +39,4 @@ export async function apiRequest<T>(
 
   return response.json() as Promise<T>;
 }
+

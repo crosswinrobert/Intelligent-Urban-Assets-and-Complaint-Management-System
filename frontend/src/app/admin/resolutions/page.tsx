@@ -1,38 +1,9 @@
 "use client";
-import { useState } from "react";
+import {useEffect,useState} from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-
-const initial = [
- { id:501,date:"2026-09-04",notes:"Pipeline leakage repaired successfully",sla:"Within SLA",complaint:403 },
- { id:502,date:"2026-09-08",notes:"Park lighting repaired",sla:"Within SLA",complaint:406 },
- { id:503,date:"2026-09-11",notes:"Water pressure restored",sla:"Within SLA",complaint:409 },
- { id:504,date:"2026-09-13",notes:"Drain blockage cleared",sla:"Within SLA",complaint:411 },
- { id:505,date:"2026-09-15",notes:"Park maintenance completed",sla:"Within SLA",complaint:412 },
-];
-
-export default function ResolutionsPage() {
- const [rows,setRows]=useState(initial);
- const [form,setForm]=useState({id:"",date:"",notes:"",sla:"Pending",complaint:""});
- const [error,setError]=useState("");
- function add(e:React.FormEvent<HTMLFormElement>){
-  e.preventDefault();setError("");
-  if(rows.some(x=>x.id===Number(form.id))){setError("Resolution ID already exists.");return;}
-  if(rows.some(x=>x.complaint===Number(form.complaint))){setError("A resolution already exists for this complaint in this sample list.");return;}
-  setRows([...rows,{...form,id:Number(form.id),complaint:Number(form.complaint)}]);
-  setForm({id:"",date:"",notes:"",sla:"Pending",complaint:""});
- }
- return <DashboardLayout title="Resolutions"><div className="space-y-6">
-  <div><h1 className="text-2xl font-semibold">Resolutions</h1><p className="mt-1 text-sm text-[var(--text-secondary)]">Track complaint resolutions and SLA status.</p></div>
-  <form onSubmit={add} className="panel grid gap-3 p-4 md:grid-cols-2">
-   <input required type="number" min="1" placeholder="Resolution ID" className="form-control" value={form.id} onChange={e=>setForm({...form,id:e.target.value})}/>
-   <input required type="number" min="1" placeholder="Complaint ID" className="form-control" value={form.complaint} onChange={e=>setForm({...form,complaint:e.target.value})}/>
-   <input required type="date" className="form-control" value={form.date} onChange={e=>setForm({...form,date:e.target.value})}/>
-   <select className="form-control" value={form.sla} onChange={e=>setForm({...form,sla:e.target.value})}><option>Pending</option><option>Within SLA</option><option>Breached SLA</option></select>
-   <textarea required maxLength={500} placeholder="Resolution notes" className="form-control md:col-span-2" value={form.notes} onChange={e=>setForm({...form,notes:e.target.value})}/>
-   {error&&<p className="text-sm text-red-400 md:col-span-2">{error}</p>}
-   <button className="btn-primary md:col-span-2">Add Resolution</button>
-  </form>
-  <div className="panel overflow-x-auto"><table className="w-full text-left text-sm"><thead><tr>{["Resolution ID","Complaint ID","Date","Notes","SLA Status"].map(x=><th className="p-4" key={x}>{x}</th>)}</tr></thead><tbody>{rows.map(x=><tr key={x.id} className="border-t border-[var(--border)]"><td className="p-4">{x.id}</td><td className="p-4">{x.complaint}</td><td className="p-4">{x.date}</td><td className="p-4">{x.notes}</td><td className="p-4">{x.sla}</td></tr>)}</tbody></table></div>
-  <p className="text-xs text-[var(--text-muted)]">Illustrative records. Database constraints and API integration pending.</p>
- </div></DashboardLayout>;
-}
+type Resolution={complaint_id:number;RawDescription:string;Category:string;SubmittedAt:string;ResolvedAt:string;current_status:string;Fname:string;Lname:string;staff_id:number|null;Position:string|null};
+export default function ResolutionsPage(){const [rows,setRows]=useState<Resolution[]>([]),[open,setOpen]=useState<any[]>([]),[complaint,setComplaint]=useState(""),[error,setError]=useState(""),[loading,setLoading]=useState(true);
+ async function load(){setLoading(true);try{const [r,o]=await Promise.all([fetch("/api/resolutions"),fetch("/api/complaints")]);const [j,k]=await Promise.all([r.json(),o.json()]);if(!j.success||!k.success)throw Error("Unable to load resolution data");setRows(j.resolutions||[]);setOpen((k.complaints||[]).filter((x:any)=>x.current_status!=="Resolved"));}catch(e){setError(e instanceof Error?e.message:"Load failed");}finally{setLoading(false);}}
+ useEffect(()=>{load();},[]);
+ async function resolve(e:React.FormEvent){e.preventDefault();setError("");try{const r=await fetch("/api/resolutions",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({complaint_id:Number(complaint)})});const j=await r.json();if(!r.ok||!j.success)throw Error(j.error||"Could not resolve complaint");setComplaint("");await load();}catch(e){setError(e instanceof Error?e.message:"Resolution failed");}}
+ return <DashboardLayout title="Resolutions"><div className="space-y-6"><div><h1 className="text-2xl font-semibold">Resolutions</h1><p className="mt-1 text-sm text-[var(--text-secondary)]">Resolved complaints recorded through the database procedure.</p></div><form onSubmit={resolve} className="panel grid gap-3 p-4 md:grid-cols-[1fr_auto]"><select required className="form-control" value={complaint} onChange={e=>setComplaint(e.target.value)}><option value="">Select complaint to resolve</option>{open.map(x=><option key={x.complaint_id} value={x.complaint_id}>#{x.complaint_id} · {x.Category} · {x.current_status}</option>)}</select><button className="btn-primary">Mark Resolved</button>{error&&<p className="text-sm text-red-400 md:col-span-2">{error}</p>}</form><div className="panel overflow-x-auto"><table className="w-full text-left text-sm"><thead className="text-[var(--text-secondary)]"><tr>{["Complaint","Category","Description","Citizen","Worker","Resolved At"].map(x=><th className="p-4" key={x}>{x}</th>)}</tr></thead><tbody>{loading?<tr><td colSpan={6} className="p-6 text-center">Loading resolutions...</td></tr>:rows.map(x=><tr key={x.complaint_id} className="border-t border-[var(--border)]"><td className="p-4">#{x.complaint_id}</td><td className="p-4">{x.Category}</td><td className="max-w-sm p-4">{x.RawDescription}</td><td className="p-4">{x.Fname} {x.Lname}</td><td className="p-4">{x.staff_id?`#${x.staff_id} ${x.Position||""}`:"—"}</td><td className="p-4">{x.ResolvedAt?new Date(x.ResolvedAt).toLocaleString():"—"}</td></tr>)}{!loading&&!rows.length&&<tr><td colSpan={6} className="p-6 text-center">No resolved complaints yet.</td></tr>}</tbody></table></div><p className="text-xs text-[var(--text-muted)]">The schema has no separate resolution ID, notes or SLA table. Resolution is stored on the complaint record.</p></div></DashboardLayout>}

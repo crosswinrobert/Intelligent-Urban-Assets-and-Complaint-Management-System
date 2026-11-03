@@ -1,18 +1,4 @@
+"use client";
+import {useEffect,useState} from "react";
 import CitizenLayout from "@/components/layout/CitizenLayout";
-
-export default function CitizenProfile() {
- return <CitizenLayout title="My Profile">
-  <div className="mb-7"><h1 className="text-2xl font-bold">My Profile</h1><p className="mt-1 text-sm text-[#A3B1A9]">View and manage your account information.</p></div>
-  <div className="max-w-2xl rounded-xl border border-[#29352F] bg-[#19221E] p-6">
-   <div className="mb-6 flex items-center gap-4"><div className="flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/20 text-xl font-bold text-emerald-400">C</div><div><h2 className="font-semibold">Citizen User</h2><p className="text-sm text-[#78877F]">Resident Account</p></div></div>
-   <form className="space-y-5">
-    <label className="block text-sm text-[#A3B1A9]">Full name<input defaultValue="Citizen User" className="form-control mt-2 w-full"/></label>
-    <label className="block text-sm text-[#A3B1A9]">Email address<input type="email" defaultValue="citizen@example.com" className="form-control mt-2 w-full"/></label>
-    <label className="block text-sm text-[#A3B1A9]">Phone number<input defaultValue="9876543210" className="form-control mt-2 w-full"/></label>
-    <label className="block text-sm text-[#A3B1A9]">Residential address<textarea defaultValue="Bengaluru, Karnataka" rows={3} className="form-control mt-2 w-full"/></label>
-    <p className="text-xs text-[#78877F]">Demo profile. Changes are not saved to a database.</p>
-    <button type="button" className="rounded-lg bg-emerald-500 px-5 py-2.5 text-sm font-semibold text-black">Save Changes</button>
-   </form>
-  </div>
- </CitizenLayout>;
-}
+export default function CitizenProfile(){const [citizens,setCitizens]=useState<any[]>([]),[userId,setUserId]=useState("");useEffect(()=>{fetch("/api/citizens").then(r=>r.json()).then(j=>{if(j.success)setCitizens(j.citizens||[]);}).catch(()=>{});},[]);const user=citizens.find(x=>String(x.user_id)===userId);return <CitizenLayout title="My Profile"><div className="mb-7"><h1 className="text-2xl font-bold">My Profile</h1><p className="mt-1 text-sm text-[#A3B1A9]">View citizen information stored in the database.</p></div><div className="max-w-2xl rounded-xl border border-[#29352F] bg-[#19221E] p-6"><label className="block text-sm text-[#A3B1A9]">Citizen account<select className="form-control mt-2 w-full" value={userId} onChange={e=>setUserId(e.target.value)}><option value="">Select account</option>{citizens.map(c=><option key={c.user_id} value={c.user_id}>{c.Fname} {c.Lname} · {c.Email}</option>)}</select></label>{user&&<div className="mt-6 space-y-4"><div><p className="text-xs text-[#78877F]">Full name</p><p>{user.Fname} {user.Lname}</p></div><div><p className="text-xs text-[#78877F]">Email</p><p>{user.Email}</p></div><div><p className="text-xs text-[#78877F]">Phone</p><p>{user.phone||"No phone number recorded"}</p></div><div><p className="text-xs text-[#78877F]">Address</p><p>{user.Address||"No address recorded"}</p></div></div>}<p className="mt-6 text-xs text-[#78877F]">Profile editing is not enabled; this endpoint is read-only.</p></div></CitizenLayout>}
