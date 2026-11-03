@@ -1,36 +1,118 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Intelligent Urban Assets and Complaint Management System
 
-## Getting Started
+An intelligent database-driven platform for managing urban infrastructure assets and citizen complaints. The system aims to improve transparency, accountability, and efficiency in urban service management through structured data management and vector-based semantic search.
 
-First, run the development server:
+## Project Overview
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Urban infrastructure issues such as damaged roads, malfunctioning streetlights, water pipeline leaks, and drainage problems require an organized reporting and resolution process.
+
+This project proposes a centralized platform where citizens can report infrastructure-related complaints, authorities can assign complaints to appropriate workers and departments, and administrators can monitor and approve resolutions.
+
+The system combines a relational database with a vector database to support structured data management and intelligent complaint similarity detection.
+
+## Objectives
+
+- Centralize urban infrastructure asset information.
+- Allow citizens to register and track complaints.
+- Enable departments to assign complaints to responsible workers.
+- Track complaint status and resolution progress.
+- Allow administrators to review and approve resolutions.
+- Identify potentially duplicate or similar complaints using vector similarity search.
+- Improve transparency and accountability in complaint management.
+
+## Technology Stack
+
+| Component | Technology |
+|---|---|
+| Frontend | Next.js |
+| Styling | Tailwind CSS |
+| Backend | Python FastAPI (proposed) |
+| Relational Database | MySQL 8.0 |
+| Vector Database | ChromaDB |
+| Embedding Model | Sentence Transformers (planned) |
+| Version Control | Git and GitHub |
+
+## Database Architecture
+
+The project uses two database paradigms.
+
+### 1. Relational Database — MySQL
+
+MySQL manages structured and relational information, including:
+
+- Citizens
+- Departments
+- Workers
+- Urban assets
+- Complaints
+- Complaint-to-asset relationships
+- Complaint-to-worker assignments
+- Complaint status audit records
+- Resolutions
+
+### 2. Vector Database — ChromaDB
+
+ChromaDB is intended to store vector embeddings generated from complaint descriptions.
+
+Planned capabilities:
+
+- Semantic search across complaint descriptions.
+- Similar complaint identification.
+- Potential duplicate complaint detection.
+- Retrieval of historically related complaints.
+
+## Core Modules
+
+1. **Citizen Module** – Complaint registration and complaint tracking.
+2. **Asset Management Module** – Management of urban infrastructure assets.
+3. **Department Management Module** – Organization of departments and responsibilities.
+4. **Worker Management Module** – Worker information and department assignments.
+5. **Complaint Management Module** – Complaint assignment and status tracking.
+6. **Resolution Management Module** – Resolution submission and administrative approval.
+7. **Intelligent Search Module** – Vector-based similarity search for complaints.
+8. **Admin Dashboard** – Monitoring and management of the overall system.
+
+## Team Responsibilities
+
+| Member | Primary Responsibility |
+|---|---|
+| Member 1 | Complete frontend development |
+| Member 2 | SQL database development and backend |
+| Both Members | Vector database implementation and integration |
+
+Both members will participate in testing, integration, documentation, and final project evaluation.
+
+## Project Structure
+
+```text
+Intelligent-Urban-Assets-and-Complaint-Management-System/
+│
+├── frontend/
+├── backend/
+│
+├── database/
+│   ├── mysql/
+│   └── vector_db/
+│
+├── documentation/
+│
+├── README.md
+├── .gitignore
+└── .env.example
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Project Status
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Currently in development.**
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The existing MySQL database and initial sample data have been prepared. Frontend development, backend implementation, vector database integration, and testing are planned development activities.
 
-## Learn More
+## Academic Context
 
-To learn more about Next.js, take a look at the following resources:
+This project is developed as part of a Database Management Systems (DBMS) course. It demonstrates the practical application of relational database design, SQL operations, advanced database concepts, and vector database technology.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Project:** Intelligent Urban Assets and Complaint Management System  
+**Domain:** Urban Infrastructure Management  
+**Database Paradigms:** SQL + Vector Database
