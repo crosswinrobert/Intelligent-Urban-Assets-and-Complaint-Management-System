@@ -242,7 +242,7 @@ export default function AssignmentsPage() {
               ) : (
                 rows.map((x) => (
                   <tr
-                    key={x.assignment_id}
+                    key={x.assinpmgnment_id}
                     className="border-t border-[var(--border)]"
                   >
                     <td className="p-4">{x.assignment_id}</td>
