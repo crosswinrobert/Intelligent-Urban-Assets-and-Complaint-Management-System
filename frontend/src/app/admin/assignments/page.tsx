@@ -1,4 +1,4 @@
-
+﻿
 "use client";
 
 import { useEffect, useState } from "react";
@@ -74,14 +74,14 @@ export default function AssignmentsPage() {
           )
           .map((x: any) => ({
             id: x.complaint_id,
-            label: `#${x.complaint_id} · ${x.Category}`,
+            label: `#${x.complaint_id} Â· ${x.Category}`,
           }))
       );
 
       setWorkers(
         (wj.workers || []).map((x: any) => ({
           id: x.staff_id,
-          label: `#${x.staff_id} · ${x.Fname} ${x.Lname}`,
+          label: `#${x.staff_id} Â· ${x.Fname} ${x.Lname}`,
         }))
       );
     } catch (e) {
@@ -242,13 +242,13 @@ export default function AssignmentsPage() {
               ) : (
                 rows.map((x) => (
                   <tr
-                    key={x.assinpmgnment_id}
+                    key={x.assignment_id}
                     className="border-t border-[var(--border)]"
                   >
                     <td className="p-4">{x.assignment_id}</td>
 
                     <td className="p-4">
-                      #{x.complaint_id} · {x.Category}
+                      #{x.complaint_id} Â· {x.Category}
                     </td>
 
                     <td className="max-w-sm p-4">
@@ -262,7 +262,7 @@ export default function AssignmentsPage() {
                     <td className="p-4">
                       {x.AssignedAt
                         ? new Date(x.AssignedAt).toLocaleDateString()
-                        : "—"}
+                        : "â€”"}
                     </td>
 
                     <td className="p-4">
@@ -315,4 +315,5 @@ export default function AssignmentsPage() {
     </DashboardLayout>
   );
 }
+
 

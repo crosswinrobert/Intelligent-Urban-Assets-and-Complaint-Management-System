@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import RoleSwitcher from "@/components/layout/RoleSwitcher";
+
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Bell, Menu, Search, X, ArrowRight } from "lucide-react";
@@ -21,7 +21,6 @@ const searchPages = [
   { label: "Assignments", description: "View worker assignments", href: "/admin/assignments" },
   { label: "Resolutions", description: "Review complaint resolutions", href: "/admin/resolutions" },
   { label: "Smart Search", description: "Search similar complaints", href: "/admin/search" },
-  { label: "Activity Logs", description: "View system activity", href: "/admin/activity" },
   { label: "Analytics", description: "View performance analytics", href: "/admin/analytics" },
   { label: "Settings", description: "Manage application settings", href: "/admin/settings" },
 ];
@@ -62,7 +61,7 @@ export default function DashboardLayout({
           collapsed ? "lg:pl-[76px]" : "lg:pl-[260px]"
         }`}
       >
-        <header className="sticky top-0 z-30 flex h-[76px] items-center justify-between border-b border-[var(--border)] bg-[var(--background)]/90 px-5 backdrop-blur-xl sm:px-8">
+        <header className="sticky top-0 z-30 flex h-[76px] items-center justify-between gap-4 border-b border-[var(--border)] bg-[var(--background)]/95 px-5 backdrop-blur-xl sm:px-8">
           <div className="flex items-center gap-3">
             <button
               type="button"
@@ -93,7 +92,7 @@ export default function DashboardLayout({
                 setSearchOpen(true);
                 setSearchQuery("");
               }}
-              className="rounded-xl border border-[var(--border)] p-2.5 text-[var(--text-secondary)] hover:bg-[var(--surface-hover)]"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-[var(--border)] text-[var(--text-secondary)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
             >
               <Search size={18} />
             </button>
@@ -101,13 +100,13 @@ export default function DashboardLayout({
             <button
               type="button"
               aria-label="Notifications"
-              className="relative rounded-xl border border-[var(--border)] p-2.5 text-[var(--text-secondary)] hover:bg-[var(--surface-hover)]"
+              className="relative flex h-10 w-10 items-center justify-center rounded-full border border-[var(--border)] text-[var(--text-secondary)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
             >
               <Bell size={18} />
               <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-[var(--accent)]" />
             </button>
 
-            <div className="flex items-center gap-2 border-l border-[var(--border)] pl-3 sm:pl-4">
+            <div className="flex items-center gap-3 border-l border-[var(--border)] pl-4 sm:pl-5">
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--accent)]/15 text-sm font-semibold text-[var(--accent)]">
                 A
               </div>
@@ -119,7 +118,7 @@ export default function DashboardLayout({
               </div>
             </div>
           </div>
-        <RoleSwitcher /></header>
+        </header>
 
         <main className="mx-auto w-full max-w-[1600px] p-5 sm:p-8">
           {children}
@@ -205,3 +204,4 @@ export default function DashboardLayout({
     </div>
   );
 }
+

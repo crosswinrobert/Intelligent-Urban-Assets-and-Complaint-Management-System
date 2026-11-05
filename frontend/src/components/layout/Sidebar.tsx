@@ -1,10 +1,10 @@
-
+﻿
 "use client";
 
 import Link from "next/link";
+import RoleSwitcher from "./RoleSwitcher";
 import { usePathname } from "next/navigation";
 import {
-  Activity,
   AlertCircle,
   BarChart3,
   Building2,
@@ -13,7 +13,6 @@ import {
   ClipboardList,
   FileCheck,
   LayoutDashboard,
-  LogOut,
   Search,
   Settings,
   ShieldCheck,
@@ -50,7 +49,6 @@ const navigationGroups = [
     title: "INTELLIGENCE",
     items: [
       { label: "Smart Search", href: "/admin/search", icon: Search },
-      { label: "Activity Logs", href: "/admin/activity", icon: Activity },
       { label: "Analytics", href: "/admin/analytics", icon: BarChart3 },
     ],
   },
@@ -167,14 +165,7 @@ export default function Sidebar({
             <Settings size={19} className="shrink-0" />
             {!collapsed && <span>Settings</span>}
           </Link>
-
-          <button
-            type="button"
-            className="mt-1 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[var(--text-secondary)] transition-colors hover:bg-red-500/10 hover:text-red-400"
-          >
-            <LogOut size={19} className="shrink-0" />
-            {!collapsed && <span>Sign out</span>}
-          </button>
+          <RoleSwitcher collapsed={collapsed} />
 
           <button
             type="button"
@@ -189,3 +180,5 @@ export default function Sidebar({
     </>
   );
 }
+
+
