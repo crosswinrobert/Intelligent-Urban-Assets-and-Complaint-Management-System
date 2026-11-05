@@ -1,6 +1,6 @@
 ﻿import {NextResponse} from "next/server";
 import pool from "@/lib/db";
-import {getEmbedding} from "@/lib/vector";
+import {getEmbedding, addComplaintToChroma} from "@/lib/vector";
 import {getCurrentUser} from "@/lib/auth";
 const unauth=()=>NextResponse.json({success:false,error:"Unauthorized."},{status:401});
 export async function GET(){
@@ -23,7 +23,29 @@ export async function POST(req:Request){
   if(!Number.isFinite(urgency)||urgency<1||urgency>5||(lat!==null&&!Number.isFinite(lat))||(lng!==null&&!Number.isFinite(lng)))return NextResponse.json({success:false,error:"Invalid urgency or coordinates."},{status:400});
   const embedding=JSON.stringify(await getEmbedding(category+". "+description));conn=await pool.getConnection();await conn.beginTransaction();started=true;
   const [result]:any=await conn.execute("INSERT INTO complaint(user_id,Category,RawDescription,Lat,`Long`,PhotoURL,asset_id,status_id,UrgencyScore,Embedding) VALUES(?,?,?,?,?,?,?,1,?,?)",[user.user_id,category,description,lat,lng,b.photo_url||null,b.asset_id||null,urgency,embedding]);
-  await conn.commit();started=false;return NextResponse.json({success:true,complaint_id:result.insertId},{status:201});
+  await conn.commit();
+  started=false;
+
+  const complaintId=Number(result.insertId);
+
+  // MySQL is the source of truth. ChromaDB indexing is best-effort.
+  conn.release();
+  conn=undefined;
+
+  let vectorIndexed=false;
+  try{
+   const chromaEmbedding=await getEmbedding(description);
+   await addComplaintToChroma(complaintId,description,category,chromaEmbedding);
+   vectorIndexed=true;
+  }catch(indexError){
+   console.error("Complaint saved in MySQL but ChromaDB indexing failed:",indexError);
+  }
+
+  return NextResponse.json({
+   success:true,
+   complaint_id:complaintId,
+   vector_indexed:vectorIndexed
+  },{status:201});
  }catch(e){if(conn&&started)await conn.rollback();console.error(e);return NextResponse.json({success:false,error:"Unable to submit complaint."},{status:500});}finally{conn?.release();}
 }
 export async function PATCH(req:Request){
@@ -41,3 +63,4 @@ export async function PATCH(req:Request){
   return NextResponse.json({success:true});
  }catch(e){console.error(e);return NextResponse.json({success:false,error:"Unable to update complaint."},{status:500});}
 }
+

@@ -2,12 +2,12 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -22,6 +22,7 @@ export default function LoginPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
+
       const result = await response.json();
 
       if (!response.ok || !result.success) {
@@ -46,39 +47,98 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[var(--background)] px-5 py-10">
-      <section className="w-full max-w-md rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-8 shadow-xl">
-        <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500 text-xl font-bold text-black">U</div>
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">Urban Pulse</h1>
-          <p className="mt-2 text-sm text-[var(--text-secondary)]">Sign in to your account</p>
-        </div>
+    <main className="up-login">
+      <div className="up-login-grid" aria-hidden="true" />
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label htmlFor="email" className="mb-2 block text-sm text-[var(--text-secondary)]">Email address</label>
-            <input id="email" type="email" required autoComplete="username" value={email} onChange={(event) => setEmail(event.target.value)} className="form-control w-full" placeholder="you@example.com" />
+      <div className="up-login-layout">
+        <section className="up-brand">
+
+          <h1 className="up-project-title">Intelligent Urban Assets <span>& Complaint Management System</span></h1>
+
+          <div className="up-brand-rule" />
+
+          <p className="up-description">
+            A unified platform for managing urban assets, tracking civic
+            complaints, and improving the services that keep our communities running.
+          </p>
+        </section>
+
+        <section className="up-login-panel">
+          <div className="up-form-heading">
+            <p className="up-eyebrow">WELCOME BACK</p>
+            <h2>Sign in</h2>
+            <p>Enter your account details to continue.</p>
           </div>
-          <div>
-            <label htmlFor="password" className="mb-2 block text-sm text-[var(--text-secondary)]">Password</label>
-            <input id="password" type="password" required autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} className="form-control w-full" placeholder="Enter your password" />
-          </div>
 
-          {error && <p role="alert" className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-400">{error}</p>}
+          <form onSubmit={handleSubmit} className="up-form">
+            <div className="up-field">
+              <label htmlFor="email">Email address</label>
+              <input
+                id="email"
+                type="email"
+                required
+                autoComplete="username"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                placeholder="name@example.com"
+              />
+            </div>
 
-          <button disabled={loading} type="submit" className="btn-primary w-full disabled:cursor-not-allowed disabled:opacity-60">
-            {loading ? "Signing in..." : "Sign in"}
-          </button>
-        </form>
+            <div className="up-field">
+              <div className="up-password-label">
+                <label htmlFor="password">Password</label>
+              </div>
 
-        <p className="mt-6 text-center text-xs text-[var(--text-muted)]">
-          Secure access to the Urban Pulse management system
-        </p>
-        <p className="mt-4 text-center text-xs text-[var(--text-muted)]">
-          <Link href="/" className="hover:text-emerald-400">Back to home</Link>
-        </p>
-      </section>
+              <div className="up-password-wrap">
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  placeholder="Enter your password"
+                />
+                <button
+                  type="button"
+                  className="up-show-password"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? "Hide" : "Show"}
+                </button>
+              </div>
+            </div>
+
+            {error && (
+              <p role="alert" className="up-error">{error}</p>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="up-submit"
+            >
+              {loading ? "Signing in..." : "Continue"}
+              {!loading && <span aria-hidden="true">→</span>}
+            </button>
+          </form>
+        </section>
+      </div>
+
+      <footer className="up-footer">
+        
+        <a
+          href="https://github.com/crosswinrobert/Intelligent-Urban-Assets-and-Complaint-Management-System"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          View project on GitHub ↗
+        </a>
+      </footer>
     </main>
   );
 }
+
+
+
 
